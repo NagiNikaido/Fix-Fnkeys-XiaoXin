@@ -73,5 +73,5 @@ $ udevadm info --query=path --name=/dev/input/eventX
 #+END_SRC
 
 ** Installation
-   - Build it from source code.
-   - AUR WIP.
+   You can build it from source code, or look for
+   - [[https://aur.archlinux.org/packages/interception-fnkeys-xiaoxin]]
