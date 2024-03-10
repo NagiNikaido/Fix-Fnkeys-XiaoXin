@@ -1,0 +1,76 @@
+* Fix Fnkeys XiaoXin
+  An [[https://gitlab.com/interception/linux/tools][Interception Tools]] plugin that transforms ~KEY_UNKNOWN(240)~ into proper keysyms on latest Lenovo XiaoXin 14 Pro series.
+  *WARNING: NOT TESTED ON DEVICES OTHER THAN Lenovo XiaoXin 14 Pro 2024 AHP9,* take at your own risk. 
+  
+** Why?
+  - The latest release of XiaoXin used a new keyboard settings (including a new Copilot key which is mapped into LSHIFT+LMETA+SC_6e).
+  - Most Fn-keys, which belongs to the "AT 2" keyboard input device, work fairly fine.
+  - However, a few Fn-keys, belonging to the "Ideapad extra buttons" input device, can no longer be properly translated from scancodes to keycodes.
+  - While a final cure must have much to do with the corresponding driver, a workround is a easier and quicker fix.
+
+** Dependencies
+  - [[https://gitlab.com/interception/linux/tools][Interception Tools]]
+
+** Building
+#+BEGIN_SRC text
+$ git clone https://github.com/naginikaido/
+$ cd fix-fnkeys-xiaoxin
+$ cmake -B build -DCMAKE_BUILD_TYPE=Release
+$ cmake --build build
+#+END_SRC
+
+** Mapping
+   | key pressed                  | scancode (hex) | keycode(dec) | keysym            |
+   |------------------------------+----------------+--------------+-------------------|
+   | Fn-Q                         |          0x13d |          146 | Help              |
+   | Fn-<F4>                      |          0x13e |          198 | XF86AudioMicMute  |
+   | Fn-<F8>                      |          0x13f |          255 | XF86RFKill        |
+   | Fn-<SPC>                     |          0x140 |          156 | XF86Launch1       |
+   |                              |          0x141 |          157 | XF86Launch2       |
+   |                              |          0x142 |          210 | XF86Launch3       |
+   |                              |          0x143 |          211 | XF86Launch4       |
+   | Fn-<SPC> (minimized mapping) |    0x140-0x143 |          236 | XF86KbdLightOnOff |
+   | default                      |              - |            - | (reserved)        |
+
+** Usage
+#+BEGIN_SRC text
+fix-fnkeys-xiaoxin - fix Lenovo XiaoXin Pro 2024's special fn-keys
+
+usage: ./fix-fnkeys-xiaoxin [-h | -m]
+
+options:
+    -h        show this message and exit
+    -m        minimized mapping
+
+features:
+    Fn-Q      (0x13d)      --->    KEY_HELP
+    Fn-<F4>   (0x13e)      --->    KEY_F20 (XF86AudioMicMute)
+    Fn-<F8>   (0x13f)      --->    KEY_RFKILL
+    Fn-<SPC>  (0x140-143)  --->    KEY_PROG1-4 (or KEY_BATTERY, XF86KbdLightOnOff for minimized mapping)
+#+END_SRC
+
+~fix-fnkeys-xiaoxin~ is an [[https://gitlab.com/interception/linux/tools][Interception Tools]] plugin. A suggested ~udevmon~ job configuration is:
+#+BEGIN_SRC yaml
+- JOB: intercept -g $DEVNODE | fix-fnkeys-xiaoxin | uinput -d $DEVNODE
+  DEVICE:
+    LINK: /dev/input/by-path/<path-to-your-"Ideapad extra buttons"-device>
+#+END_SRC
+
+Typically, to locate the device path, you can first find the corresponding input event by
+#+BEGIN_SRC
+# evtest
+No device specified, trying to scan all of /dev/input/event*
+Available devices:
+...
+/dev/input/eventX         Ideapad extra buttons
+...
+#+END_SRC
+
+Then, ~udevadm~ can tell your the permanent path:
+#+BEGIN_SRC
+$ udevadm info --query=path --name=/dev/input/eventX
+#+END_SRC
+
+** Installation
+   - [[*Building][Build it from source code.]]
+   - AUR WIP.
