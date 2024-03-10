@@ -1,5 +1,6 @@
 * Fix Fnkeys XiaoXin
   An [[https://gitlab.com/interception/linux/tools][Interception Tools]] plugin that transforms ~KEY_UNKNOWN(240)~ into proper keysyms on latest Lenovo XiaoXin 14 Pro series.
+
   *WARNING: NOT TESTED ON DEVICES OTHER THAN Lenovo XiaoXin 14 Pro 2024 AHP9,* take at your own risk. 
   
 ** Why?
@@ -13,8 +14,8 @@
 
 ** Building
 #+BEGIN_SRC text
-$ git clone https://github.com/naginikaido/
-$ cd fix-fnkeys-xiaoxin
+$ git clone https://github.com/NagiNikaido/Fix-Fnkeys-XiaoXin.git
+$ cd Fix-Fnkeys-XiaoXin
 $ cmake -B build -DCMAKE_BUILD_TYPE=Release
 $ cmake --build build
 #+END_SRC
@@ -72,5 +73,5 @@ $ udevadm info --query=path --name=/dev/input/eventX
 #+END_SRC
 
 ** Installation
-   - [[*Building][Build it from source code.]]
+   - [[Building][Build it from source code.]]
    - AUR WIP.
